@@ -1,5 +1,7 @@
 import tcod
 
+from game_object import GameObject
+
 
 class Tile:
     color_dark_wall = tcod.Color(0, 0, 100)
@@ -43,7 +45,10 @@ class GameMap:
                 tcod.console_set_char_background(con, x, y, self.data[x][y].color, tcod.BKGND_SET)
 
     def addRoom(self, room):
+        x, y = room.center()
+        room.caption = GameObject(x, y, chr(65 + len(self.rooms)), tcod.white)
         self.rooms.append(room)
+
         #go through the tiles in the rectangle and make them passable
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):

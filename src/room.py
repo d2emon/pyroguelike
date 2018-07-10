@@ -8,6 +8,7 @@ class RoomRect:
         self.y1 = y
         self.x2 = x + w
         self.y2 = y + h
+        self.caption = None
 
     def center(self):
         center_x = int((self.x1 + self.x2) / 2)

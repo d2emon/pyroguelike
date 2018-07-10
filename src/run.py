@@ -24,18 +24,17 @@ def handle_keys(player, game_map):
 
 
 def loadData(game_map):
-    game_map.data[30][22].blocked = True
-    game_map.data[30][22].block_sight = True
-    game_map.data[50][22].blocked = True
-    game_map.data[50][22].block_sight = True
+    # game_map.data[30][22].blocked = True
+    # game_map.data[30][22].block_sight = True
+    # game_map.data[50][22].blocked = True
+    # game_map.data[50][22].block_sight = True
 
     # create two rooms
-    room1 = RoomRect(20, 15, 10, 15)
-    room2 = RoomRect(50, 15, 10, 15)
-    game_map.addRoom(room1)
-    game_map.addRoom(room2)
-
-    game_map.addHTunnel(25, 55, 23)
+    # room1 = RoomRect(20, 15, 10, 15)
+    # room2 = RoomRect(50, 15, 10, 15)
+    # game_map.addRoom(room1)
+    # game_map.addRoom(room2)
+    # game_map.addHTunnel(25, 55, 23)
 
     num_rooms = 0
     for r in range(MAX_ROOMS):
@@ -81,7 +80,8 @@ SCREEN_HEIGHT = 60
 LIMIT_FPS = 20
 
 MAP_WIDTH = 80
-MAP_HEIGHT = 40
+MAP_HEIGHT = 50
+# MAP_HEIGHT = 40
 
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 6
@@ -98,14 +98,15 @@ def main():
 
     con = tcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    # player = Player(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
-    player = Player(25, 23)
-    npc = NPC(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
-
-    objects = [npc, player, npc]
-
     game_map = GameMap(MAP_WIDTH, MAP_HEIGHT)
     loadData(game_map)
+
+    # player = Player(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
+    # npc = NPC(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
+    player = Player(*game_map.rooms[0].center())
+    npc = NPC(*game_map.rooms[1].center())
+
+    objects = [player, npc]
 
     while not tcod.console_is_window_closed():
         tcod.console_set_default_foreground(con, tcod.white)
@@ -114,6 +115,8 @@ def main():
         tcod.console_put_char(con, player.x, player.y, '@', tcod.BKGND_NONE)
 
         game_map.draw(con)
+        for r in game_map.rooms:
+            r.caption.draw(con)
         for o in objects:
             o.draw(con)
 
@@ -121,6 +124,8 @@ def main():
 
         tcod.console_flush()
 
+        for r in game_map.rooms:
+            r.caption.clear(con)
         for o in objects:
             o.clear(con)
 
