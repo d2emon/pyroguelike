@@ -3,6 +3,7 @@ import tcod
 from player import Player, NPC
 from game_object import DIR_NORTH, DIR_SOUTH, DIR_EAST, DIR_WEST
 from tile import GameMap
+from room import RoomRect
 
 
 def handle_keys(player, game_map):
@@ -20,6 +21,21 @@ def handle_keys(player, game_map):
         player.move(*DIR_WEST, game_map)
     elif tcod.console_is_key_pressed(tcod.KEY_RIGHT):
         player.move(*DIR_EAST, game_map)
+
+
+def loadData(game_map):
+    game_map.data[30][22].blocked = True
+    game_map.data[30][22].block_sight = True
+    game_map.data[50][22].blocked = True
+    game_map.data[50][22].block_sight = True
+
+    # create two rooms
+    room1 = RoomRect(20, 15, 10, 15)
+    room2 = RoomRect(50, 15, 10, 15)
+    game_map.addRoom(room1)
+    game_map.addRoom(room2)
+
+    game_map.addHTunnel(25, 55, 23)
 
 
 SCREEN_WIDTH = 80
@@ -41,16 +57,14 @@ def main():
 
     con = tcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    player = Player(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
+    # player = Player(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
+    player = Player(25, 23)
     npc = NPC(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
 
     objects = [npc, player, npc]
 
     game_map = GameMap(MAP_WIDTH, MAP_HEIGHT)
-    game_map.data[30][22].blocked = True
-    game_map.data[30][22].block_sight = True
-    game_map.data[50][22].blocked = True
-    game_map.data[50][22].block_sight = True
+    loadData(game_map)
 
     while not tcod.console_is_window_closed():
         tcod.console_set_default_foreground(con, tcod.white)

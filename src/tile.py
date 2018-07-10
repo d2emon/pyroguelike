@@ -29,7 +29,7 @@ class GameMap:
         # fill map with "unblocked" tiles
         self.data = [
             [
-                Tile(False)
+                Tile(True)
                 for y in range(self.height)
             ]
             for x in range(self.width)
@@ -40,3 +40,20 @@ class GameMap:
         for y in range(self.height):
             for x in range(self.width):
                 tcod.console_set_char_background(con, x, y, self.data[x][y].color, tcod.BKGND_SET)
+
+    def addRoom(self, room):
+        #go through the tiles in the rectangle and make them passable
+        for x in range(room.x1 + 1, room.x2):
+            for y in range(room.y1 + 1, room.y2):
+                self.data[x][y].blocked = False
+                self.data[x][y].block_sight = False
+
+    def addHTunnel(self, x1, x2, y):
+        for x in range(min(x1, x2), max(x1, x2) + 1):
+            self.data[x][y].blocked = False
+            self.data[x][y].block_sight = False
+
+    def addVTunnel(self, y1, y2, x):
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            self.data[x][y].blocked = False
+            self.data[x][y].block_sight = False
