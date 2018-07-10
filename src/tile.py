@@ -34,6 +34,7 @@ class GameMap:
             ]
             for x in range(self.width)
         ]
+        self.rooms = []
 
     def draw(self, con):
         #go through all tiles, and set their background color
@@ -42,6 +43,7 @@ class GameMap:
                 tcod.console_set_char_background(con, x, y, self.data[x][y].color, tcod.BKGND_SET)
 
     def addRoom(self, room):
+        self.rooms.append(room)
         #go through the tiles in the rectangle and make them passable
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):

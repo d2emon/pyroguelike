@@ -37,6 +37,43 @@ def loadData(game_map):
 
     game_map.addHTunnel(25, 55, 23)
 
+    num_rooms = 0
+    for r in range(MAX_ROOMS):
+        # random width and height
+        w = tcod.random_get_int(0, ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+        h = tcod.random_get_int(0, ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+        # random position without going out of the boundaries of the map
+        x = tcod.random_get_int(0, 0, MAP_WIDTH - w - 1)
+        y = tcod.random_get_int(0, 0, MAP_HEIGHT - h - 1)
+
+        # "Rect" class makes rectangles easier to work with
+        new_room = RoomRect(x, y, w, h)
+
+        # run through the other rooms and see if they intersect with this one
+        failed = False
+        for other_room in game_map.rooms:
+            if new_room.intersect(other_room):
+                failed = True
+                break
+
+        if not failed:
+            # this means there are no intersections, so this room is valid
+
+            # "paint" it to the map's tiles
+            game_map.addRoom(new_room)
+            if num_rooms == 0:
+                # center coordinates of new room, will be useful later
+                # new_x, new_y = new_room.center()
+                # this is the first room, where the player starts at
+                # player.x = new_x
+                # player.y = new_y
+                pass
+            else:
+                new_room.makeTunnel(game_map.rooms[num_rooms - 1], game_map)
+
+            # finally, append the new room to the list
+            num_rooms += 1
+
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 60
@@ -45,6 +82,10 @@ LIMIT_FPS = 20
 
 MAP_WIDTH = 80
 MAP_HEIGHT = 40
+
+ROOM_MAX_SIZE = 10
+ROOM_MIN_SIZE = 6
+MAX_ROOMS = 30
 
 
 def main():
