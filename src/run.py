@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 import tcod
-from player import Player, DIR_NORTH, DIR_SOUTH, DIR_EAST, DIR_WEST
+from player import Player, NPC
+from game_object import DIR_NORTH, DIR_SOUTH, DIR_EAST, DIR_WEST
 
 
 def handle_keys(player):
@@ -11,13 +12,13 @@ def handle_keys(player):
         return True
 
     if tcod.console_is_key_pressed(tcod.KEY_UP):
-        player.go(DIR_NORTH)
+        player.move(*DIR_NORTH)
     elif tcod.console_is_key_pressed(tcod.KEY_DOWN):
-        player.go(DIR_SOUTH)
+        player.move(*DIR_SOUTH)
     elif tcod.console_is_key_pressed(tcod.KEY_LEFT):
-        player.go(DIR_WEST)
+        player.move(*DIR_WEST)
     elif tcod.console_is_key_pressed(tcod.KEY_RIGHT):
-        player.go(DIR_EAST)
+        player.move(*DIR_EAST)
 
 
 SCREEN_WIDTH = 80
@@ -31,26 +32,37 @@ def main():
         'arial10x10.png',
         tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD,
     )
-    player = Player()
-    player.x = int(SCREEN_WIDTH / 2)
-    player.y = int(SCREEN_HEIGHT / 2)
-    with tcod.console_init_root(
-        SCREEN_WIDTH,
-        SCREEN_HEIGHT,
-        'Title'
-    ) as root_console:
-        while not tcod.console_is_window_closed():
-            tcod.sys_set_fps(LIMIT_FPS)
-            tcod.console_set_default_foreground(0, tcod.white)
-            root_console.print_(x=0, y=0, string='Hello World')
-            tcod.console_put_char(0, player.x, player.y, '@', tcod.BKGND_NONE)
-            tcod.console_flush()
-            tcod.console_put_char(0, player.x, player.y, ' ', tcod.BKGND_NONE)
-            exit = handle_keys(player)
-            if exit:
-                break
-        else:
-            print("exit")
+    tcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Title')
+    tcod.sys_set_fps(LIMIT_FPS)
+
+    con = tcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+    player = Player(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
+    npc = NPC(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2))
+
+    objects = [npc, player, npc]
+
+    while not tcod.console_is_window_closed():
+        tcod.console_set_default_foreground(con, tcod.white)
+
+        con.print_(x=0, y=0, string='Hello World')
+        tcod.console_put_char(con, player.x, player.y, '@', tcod.BKGND_NONE)
+
+        for o in objects:
+            o.draw(con)
+
+        tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
+
+        tcod.console_flush()
+
+        for o in objects:
+            o.clear(con)
+
+        exit = handle_keys(player)
+        if exit:
+            break
+    else:
+        print("exit")
 
 
 if __name__ == "__main__":
