@@ -16,10 +16,26 @@ class GameObject:
         self.char = char
         self.color = color
 
-    def move(self, dx, dy):
+    def move(self, dx, dy, game_map):
         # move by the given amount
-        self.x += dx
-        self.y += dy
+        newx = self.x + dx
+        newy = self.y + dy
+
+        if newx < 0:
+            return
+        if newy < 0:
+            return
+
+        if newx >= game_map.width:
+            return
+        if newy >= game_map.height:
+            return
+
+        if game_map.data[newx][newy].blocked:
+            return
+
+        self.x = newx
+        self.y = newy
         # self.x = max(min(self.x + dir[0], self.maxx), self.minx)
         # self.y = max(min(self.y + dir[1], self.maxy), self.miny)
 
