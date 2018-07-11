@@ -6,6 +6,27 @@ from tile import GameMap
 from room import RoomRect
 
 
+SCREEN_WIDTH = 80
+SCREEN_HEIGHT = 60
+
+LIMIT_FPS = 20
+
+MAP_WIDTH = SCREEN_WIDTH
+MAP_HEIGHT = SCREEN_HEIGHT
+# MAP_WIDTH = 80
+# MAP_HEIGHT = 40
+
+ROOM_MAX_SIZE = 10
+ROOM_MIN_SIZE = 6
+MAX_ROOMS = 30
+
+FOV_ALGO = 0
+FOV_LIGHT_WALLS = True
+TORCH_RADIUS = 10
+
+MAX_ROOM_MONSTERS = 3
+
+
 def handle_keys(player, game_map):
     key = tcod.console_wait_for_keypress(True)
     if key.vk == tcod.KEY_ENTER and key.lalt:
@@ -57,29 +78,11 @@ def loadData(game_map):
                 pass
             else:
                 new_room.makeTunnel(game_map.rooms[num_rooms - 1], game_map)
+            new_room.place_objects(MAX_ROOM_MONSTERS)
 
             # finally, append the new room to the list
             num_rooms += 1
     game_map.set_fov()
-
-
-SCREEN_WIDTH = 80
-SCREEN_HEIGHT = 60
-
-LIMIT_FPS = 20
-
-MAP_WIDTH = SCREEN_WIDTH
-MAP_HEIGHT = SCREEN_HEIGHT
-# MAP_WIDTH = 80
-# MAP_HEIGHT = 40
-
-ROOM_MAX_SIZE = 10
-ROOM_MIN_SIZE = 6
-MAX_ROOMS = 30
-
-FOV_ALGO = 0
-FOV_LIGHT_WALLS = True
-TORCH_RADIUS = 10
 
 
 def main():
@@ -100,7 +103,7 @@ def main():
     player = Player(*game_map.rooms[0].center())
     npc = NPC(*game_map.rooms[1].center())
 
-    objects = [player, npc]
+    objects = [npc, player]
 
     while not tcod.console_is_window_closed():
         tcod.console_set_default_foreground(con, tcod.white)
@@ -113,7 +116,11 @@ def main():
             tcod.map_compute_fov(game_map.fov_map, player.x, player.y, TORCH_RADIUS, FOV_LIGHT_WALLS)
             game_map.draw(con)
 
-        drawing = [r.caption for r in game_map.rooms] + objects
+        drawing = []
+        for r in game_map.rooms:
+            drawing.append(r.caption)
+            drawing += r.objects
+        drawing += objects
         for d in drawing:
             if tcod.map_is_in_fov(game_map.fov_map, d.x, d.y):
                 d.draw(con)
@@ -122,10 +129,8 @@ def main():
 
         tcod.console_flush()
 
-        for r in game_map.rooms:
-            r.caption.clear(con)
-        for o in objects:
-            o.clear(con)
+        for d in drawing:
+            d.clear(con)
 
         exit = handle_keys(player, game_map)
         if exit:

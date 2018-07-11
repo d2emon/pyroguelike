@@ -1,5 +1,7 @@
 import tcod
 
+from game_object import GameObject
+
 
 class RoomRect:
     #a rectangle on the map. used to characterize a room.
@@ -9,6 +11,7 @@ class RoomRect:
         self.x2 = x + w
         self.y2 = y + h
         self.caption = None
+        self.objects = []
 
     def center(self):
         center_x = int((self.x1 + self.x2) / 2)
@@ -37,3 +40,31 @@ class RoomRect:
             # first move vertically, then horizontally
             game_map.addVTunnel(prev_y, y, x)
             game_map.addHTunnel(prev_x, x, prev_y)
+
+    def place_objects(self, monsters):
+        # choose random number of monsters
+        # num_monsters = tcod.random_get_int(0, 0, MAX_ROOM_MONSTERS)
+        num_monsters = tcod.random_get_int(0, 0, monsters)
+
+        for i in range(num_monsters):
+            # choose random spot for this monster
+            x = tcod.random_get_int(0, self.x1 + 1, self.x2 - 1)
+            y = tcod.random_get_int(0, self.y1 + 1, self.y2 - 1)
+
+            # chances: 20% monster A, 40% monster B, 10% monster C, 30% monster D:
+            choice = tcod.random_get_int(0, 0, 100)
+            # if choice < 80:
+            if choice < 75:
+                # 80% chance of getting an orc
+                # create an orc
+                monster = GameObject(x, y, 'o', tcod.desaturated_green)
+            else:
+                # create a troll
+                monster = GameObject(x, y, 'T', tcod.darker_green)
+
+            # if choice < 20:
+            # elif choice < 20 + 40:
+            # elif choice < 20 + 40 + 10:
+            # else:
+
+            self.objects.append(monster)
