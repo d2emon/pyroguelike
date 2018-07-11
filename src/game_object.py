@@ -1,3 +1,4 @@
+import math
 import tcod
 
 
@@ -20,6 +21,9 @@ class GameObject:
         self.fov_recompute = True
         self.aggresive = False
 
+        self.weapon = None
+        self.ai = None
+
     def move(self, dx, dy, game_map):
         # move by the given amount
         newx = self.x + dx
@@ -38,9 +42,8 @@ class GameObject:
         target = game_map.objects_at(newx, newy)
         # attack if target found, move otherwise
         if target is not None:
-            if target.aggresive:
-                print('The ' + target.name + ' laughs at your puny efforts to attack him!')
-                return
+            if target.ai is not None:
+                target.ai.attacked(self)
 
         if self.is_blocked(newx, newy, game_map):
             return
@@ -51,6 +54,24 @@ class GameObject:
         # self.y = max(min(self.y + dir[1], self.maxy), self.miny)
 
         self.fov_recompute = True
+
+    def distance(self, other):
+        #return the distance to another object
+        dx = other.x - self.x
+        dy = other.y - self.y
+        return math.sqrt(dx ** 2 + dy ** 2)
+
+    def move_to(self, x, y, game_map):
+        # vector from this object to the target, and distance
+        dx = x - self.x
+        dy = y - self.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        # normalize it to length 1 (preserving direction), then round it and
+        # convert to integer so the movement is restricted to the map grid
+        dx = int(round(dx / distance))
+        dy = int(round(dy / distance))
+        self.move(dx, dy, game_map)
 
     def draw(self, con):
         # set the color and then draw the character that represents this object at its position

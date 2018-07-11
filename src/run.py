@@ -147,8 +147,8 @@ def main():
         #let monsters take their turn
         if state == STATE_PLAY and player.action != player.ACTION_WAIT:
             for object in game_map.objects:
-                if object.aggresive:
-                    print('The ' + object.name + ' growls!')
+                if object.ai is not None:
+                    object.ai.turn(player, game_map)
     else:
         print("exit")
 
