@@ -43,7 +43,7 @@ class GameObject:
         # attack if target found, move otherwise
         if target is not None:
             if target.ai is not None:
-                target.ai.attacked(self)
+                target.ai.attacked(self, game_map)
 
         if self.is_blocked(newx, newy, game_map):
             return

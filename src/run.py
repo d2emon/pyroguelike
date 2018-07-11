@@ -29,6 +29,7 @@ MAX_ROOM_MONSTERS = 3
 
 STATE_PLAY = 0
 STATE_EXIT = 1
+STATE_DEAD = 2
 
 
 def handle_keys(player, game_map, state):
@@ -40,6 +41,9 @@ def handle_keys(player, game_map, state):
 
     if state != STATE_PLAY:
         return state
+
+    if player.action == player.ACTION_DEAD:
+        return STATE_DEAD
 
     if tcod.console_is_key_pressed(tcod.KEY_UP):
         player.move(*DIR_NORTH, game_map)
@@ -134,6 +138,11 @@ def main():
                 d.draw(con)
 
         tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
+
+        # show the player's stats
+        text = "HP: {}/{}".format(player.weapon.hp, player.weapon.max_hp) + " " * 10
+        tcod.console_set_default_foreground(con, tcod.white)
+        tcod.console_print_ex(con, 1, SCREEN_HEIGHT - 2, tcod.BKGND_NONE, tcod.LEFT, text)
 
         tcod.console_flush()
 

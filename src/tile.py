@@ -104,3 +104,7 @@ class GameMap:
         for object in self.objects:
             if object.x == x and object.y == y:
                 return object
+
+    def send_to_back(self, object):
+        self.objects.remove(object)
+        self.objects.insert(0, object)
