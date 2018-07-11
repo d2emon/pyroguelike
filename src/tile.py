@@ -98,3 +98,9 @@ class GameMap:
             self.objects += r.objects
 
         self.objects += objects
+
+    def objects_at(self, x, y):
+        # try to find an attackable object there
+        for object in self.objects:
+            if object.x == x and object.y == y:
+                return object

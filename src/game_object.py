@@ -18,6 +18,7 @@ class GameObject:
         self.name = name
         self.blocks = blocks
         self.fov_recompute = True
+        self.aggresive = False
 
     def move(self, dx, dy, game_map):
         # move by the given amount
@@ -33,6 +34,13 @@ class GameObject:
             return
         if newy >= game_map.height:
             return
+
+        target = game_map.objects_at(newx, newy)
+        # attack if target found, move otherwise
+        if target is not None:
+            if target.aggresive:
+                print('The ' + target.name + ' laughs at your puny efforts to attack him!')
+                return
 
         if self.is_blocked(newx, newy, game_map):
             return

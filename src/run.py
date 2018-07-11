@@ -27,12 +27,19 @@ TORCH_RADIUS = 10
 MAX_ROOM_MONSTERS = 3
 
 
-def handle_keys(player, game_map):
+STATE_PLAY = 0
+STATE_EXIT = 1
+
+
+def handle_keys(player, game_map, state):
     key = tcod.console_wait_for_keypress(True)
     if key.vk == tcod.KEY_ENTER and key.lalt:
         tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
     elif key.vk == tcod.KEY_ESCAPE:
-        return True
+        return STATE_EXIT
+
+    if state != STATE_PLAY:
+        return state
 
     if tcod.console_is_key_pressed(tcod.KEY_UP):
         player.move(*DIR_NORTH, game_map)
@@ -42,6 +49,9 @@ def handle_keys(player, game_map):
         player.move(*DIR_WEST, game_map)
     elif tcod.console_is_key_pressed(tcod.KEY_RIGHT):
         player.move(*DIR_EAST, game_map)
+    else:
+        player.action = player.ACTION_WAIT
+    return state
 
 
 def loadData(game_map):
@@ -86,6 +96,8 @@ def loadData(game_map):
 
 
 def main():
+    state = STATE_PLAY
+
     tcod.console_set_custom_font(
         'arial10x10.png',
         tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD,
@@ -128,9 +140,15 @@ def main():
         for d in game_map.objects:
             d.clear(con)
 
-        exit = handle_keys(player, game_map)
-        if exit:
+        state = handle_keys(player, game_map, state)
+        if state == STATE_EXIT:
             break
+
+        #let monsters take their turn
+        if state == STATE_PLAY and player.action != player.ACTION_WAIT:
+            for object in game_map.objects:
+                if object.aggresive:
+                    print('The ' + object.name + ' growls!')
     else:
         print("exit")
 

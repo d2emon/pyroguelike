@@ -1,6 +1,6 @@
 import tcod
 
-from game_object import GameObject
+from player import Monster
 
 
 class RoomRect:
@@ -57,10 +57,10 @@ class RoomRect:
             if choice < 75:
                 # 80% chance of getting an orc
                 # create an orc
-                monster = GameObject(x, y, 'o', 'Orc', tcod.desaturated_green, True)
+                monster = Monster(x, y, 'o', 'Orc', tcod.desaturated_green)
             else:
                 # create a troll
-                monster = GameObject(x, y, 'T', 'Troll', tcod.darker_green, True)
+                monster = Monster(x, y, 'T', 'Troll', tcod.darker_green)
 
             # if choice < 20:
             # elif choice < 20 + 40:
