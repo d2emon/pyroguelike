@@ -17,6 +17,10 @@ class Tile:
         if block_sight is None:
             block_sight = blocked
         self.block_sight = block_sight
+        self.explored = False
+
+    def explore(self):
+        self.explored = True
 
     def color(self, visible=True):
         if self.block_sight:
@@ -55,8 +59,14 @@ class GameMap:
         #go through all tiles, and set their background color
         for y in range(self.height):
             for x in range(self.width):
+                tile = self.data[x][y]
                 visible = tcod.map_is_in_fov(self.fov_map, x, y)
-                tcod.console_set_char_background(con, x, y, self.data[x][y].color(visible), tcod.BKGND_SET)
+                if visible:
+                    tile.explore()
+                if not tile.explored:
+                    continue
+                color = tile.color(visible)
+                tcod.console_set_char_background(con, x, y, color, tcod.BKGND_SET)
 
     def addRoom(self, room):
         x, y = room.center()
