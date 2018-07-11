@@ -47,6 +47,7 @@ class GameMap:
             for x in range(self.width)
         ]
         self.rooms = []
+        self.objects = []
         self.fov_map = tcod.map_new(self.width, self.height)
 
     def set_fov(self):
@@ -70,7 +71,8 @@ class GameMap:
 
     def addRoom(self, room):
         x, y = room.center()
-        room.caption = GameObject(x, y, chr(65 + len(self.rooms)), tcod.white)
+        room_name = chr(65 + len(self.rooms))
+        room.caption = GameObject(x, y, room_name, room_name, tcod.white)
         self.rooms.append(room)
 
         #go through the tiles in the rectangle and make them passable
@@ -88,3 +90,11 @@ class GameMap:
         for y in range(min(y1, y2), max(y1, y2) + 1):
             self.data[x][y].blocked = False
             self.data[x][y].block_sight = False
+
+    def reload_objects(self, objects):
+        self.objects = []
+        for r in self.rooms:
+            self.objects.append(r.caption)
+            self.objects += r.objects
+
+        self.objects += objects

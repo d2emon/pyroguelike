@@ -57,10 +57,10 @@ class RoomRect:
             if choice < 75:
                 # 80% chance of getting an orc
                 # create an orc
-                monster = GameObject(x, y, 'o', tcod.desaturated_green)
+                monster = GameObject(x, y, 'o', 'Orc', tcod.desaturated_green, True)
             else:
                 # create a troll
-                monster = GameObject(x, y, 'T', tcod.darker_green)
+                monster = GameObject(x, y, 'T', 'Troll', tcod.darker_green, True)
 
             # if choice < 20:
             # elif choice < 20 + 40:

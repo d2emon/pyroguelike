@@ -10,11 +10,13 @@ DIR_EAST = (1, 0)
 class GameObject:
     # this is a generic object: the player, a monster, an item, the stairs...
     # it's always represented by a character on screen.
-    def __init__(self, x, y, char, color):
+    def __init__(self, x, y, char, name, color, blocks=False):
         self.x = x
         self.y = y
         self.char = char
         self.color = color
+        self.name = name
+        self.blocks = blocks
         self.fov_recompute = True
 
     def move(self, dx, dy, game_map):
@@ -32,7 +34,7 @@ class GameObject:
         if newy >= game_map.height:
             return
 
-        if game_map.data[newx][newy].blocked:
+        if self.is_blocked(newx, newy, game_map):
             return
 
         self.x = newx
@@ -50,3 +52,15 @@ class GameObject:
     def clear(self, con):
         # erase the character that represents this object
         tcod.console_put_char(con, self.x, self.y, ' ', tcod.BKGND_NONE)
+
+    def is_blocked(self, x, y, game_map):
+        # first test the map tile
+        if game_map.data[x][y].blocked:
+            return True
+
+        # now check for any blocking objects
+        for object in game_map.objects:
+            if object.blocks and object.x == x and object.y == y:
+                return True
+
+        return False

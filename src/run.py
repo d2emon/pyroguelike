@@ -116,12 +116,8 @@ def main():
             tcod.map_compute_fov(game_map.fov_map, player.x, player.y, TORCH_RADIUS, FOV_LIGHT_WALLS)
             game_map.draw(con)
 
-        drawing = []
-        for r in game_map.rooms:
-            drawing.append(r.caption)
-            drawing += r.objects
-        drawing += objects
-        for d in drawing:
+        game_map.reload_objects(objects)
+        for d in game_map.objects:
             if tcod.map_is_in_fov(game_map.fov_map, d.x, d.y):
                 d.draw(con)
 
@@ -129,7 +125,7 @@ def main():
 
         tcod.console_flush()
 
-        for d in drawing:
+        for d in game_map.objects:
             d.clear(con)
 
         exit = handle_keys(player, game_map)
