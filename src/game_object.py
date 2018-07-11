@@ -15,6 +15,7 @@ class GameObject:
         self.y = y
         self.char = char
         self.color = color
+        self.fov_recompute = True
 
     def move(self, dx, dy, game_map):
         # move by the given amount
@@ -38,6 +39,8 @@ class GameObject:
         self.y = newy
         # self.x = max(min(self.x + dir[0], self.maxx), self.minx)
         # self.y = max(min(self.y + dir[1], self.maxy), self.miny)
+
+        self.fov_recompute = True
 
     def draw(self, con):
         # set the color and then draw the character that represents this object at its position

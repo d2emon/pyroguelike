@@ -24,18 +24,6 @@ def handle_keys(player, game_map):
 
 
 def loadData(game_map):
-    # game_map.data[30][22].blocked = True
-    # game_map.data[30][22].block_sight = True
-    # game_map.data[50][22].blocked = True
-    # game_map.data[50][22].block_sight = True
-
-    # create two rooms
-    # room1 = RoomRect(20, 15, 10, 15)
-    # room2 = RoomRect(50, 15, 10, 15)
-    # game_map.addRoom(room1)
-    # game_map.addRoom(room2)
-    # game_map.addHTunnel(25, 55, 23)
-
     num_rooms = 0
     for r in range(MAX_ROOMS):
         # random width and height
@@ -72,6 +60,7 @@ def loadData(game_map):
 
             # finally, append the new room to the list
             num_rooms += 1
+    game_map.set_fov()
 
 
 SCREEN_WIDTH = 80
@@ -79,13 +68,18 @@ SCREEN_HEIGHT = 60
 
 LIMIT_FPS = 20
 
-MAP_WIDTH = 80
-MAP_HEIGHT = 50
+MAP_WIDTH = SCREEN_WIDTH
+MAP_HEIGHT = SCREEN_HEIGHT
+# MAP_WIDTH = 80
 # MAP_HEIGHT = 40
 
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 6
 MAX_ROOMS = 30
+
+FOV_ALGO = 0
+FOV_LIGHT_WALLS = True
+TORCH_RADIUS = 10
 
 
 def main():
@@ -111,14 +105,18 @@ def main():
     while not tcod.console_is_window_closed():
         tcod.console_set_default_foreground(con, tcod.white)
 
-        con.print_(x=0, y=0, string='Hello World')
         tcod.console_put_char(con, player.x, player.y, '@', tcod.BKGND_NONE)
 
-        game_map.draw(con)
-        for r in game_map.rooms:
-            r.caption.draw(con)
-        for o in objects:
-            o.draw(con)
+        if player.fov_recompute:
+            # recompute FOV if needed (the player moved or something)
+            player.fov_recompute = False
+            tcod.map_compute_fov(game_map.fov_map, player.x, player.y, TORCH_RADIUS, FOV_LIGHT_WALLS)
+            game_map.draw(con)
+
+        drawing = [r.caption for r in game_map.rooms] + objects
+        for d in drawing:
+            if tcod.map_is_in_fov(game_map.fov_map, d.x, d.y):
+                d.draw(con)
 
         tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
 

@@ -5,15 +5,9 @@ from game_object import GameObject
 
 class Player(GameObject):
     def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
-        self.char = '@'
-        self.color = tcod.white
+        GameObject.__init__(self, x, y, '@', tcod.white)
 
 
 class NPC(GameObject):
     def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
-        self.char = '@'
-        self.color = tcod.yellow
+        GameObject.__init__(self, x, y, '@', tcod.yellow)
